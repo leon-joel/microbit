@@ -1,31 +1,38 @@
-let imageA: Image = images.createImage(`
-. # # . .
-# . . # .
-# . . # .
-# # # # .
-# . . # .
-`)
-let imageB: Image = images.createImage(`
-# # # . .
-# . . # .
-# # # . .
-# . . # .
-# # # . .
-`)
-let imageC: Image = images.createImage(`
-. # # # .
-# . . . .
-# . . . .
-# . . . .
-. # # # .
-`)
-let imageD: Image = images.createImage(`
-# # # . .
-# . . # .
-# . . # .
-# . . # .
-# # # . .
-`)
+let imageA: Image = null
+let imageB: Image = null
+let imageC: Image = null
+let imageD: Image = null
+function initImages() {
+  imageA = images.createImage(`
+        . # # . .
+        # . . # .
+        # . . # .
+        # # # # .
+        # . . # .
+        `)
+  imageB = images.createImage(`
+        # # # . .
+        # . . # .
+        # # # . .
+        # . . # .
+        # # # . .
+        `)
+  imageC = images.createImage(`
+        . # # # .
+        # . . . .
+        # . . . .
+        # . . . .
+        . # # # .
+        `)
+  imageD = images.createImage(`
+        # # # . .
+        # . . # .
+        # . . # .
+        # . . # .
+        # # # . .
+        `)
+}
+
 let brightnessLed = 16
 let scrollMSec = 300;
 let padA = 0
@@ -36,19 +43,53 @@ let cntPadA = 0
 let cntPadB = 0
 let cntPadC = 0
 let cntPadD = 0
+function initLed() {
+  brightnessLed = 16
+  led.setDisplayMode(DisplayMode.Greyscale)
+  led.setBrightness(brightnessLed)
+}
+let neo: neopixel.Strip = null
+let neoRange: neopixel.Strip = null
+function initNeoPixel() {
+  neo = neopixel.create(DigitalPin.P8, 4, NeoPixelMode.RGB)
+  neo.setBrightness(16)
+  neo.setPixelColor(0, neopixel.colors(NeoPixelColors.Red))
+  neo.show()
+  neoRange = neo.range(1, 3)
+  neoRange.showRainbow(1, 360)
+}
+
 input.onButtonPressed(Button.A, function () {
   showA()
 })
 input.onButtonPressed(Button.B, function () {
   showB()
 })
+let exitLoop = 0
+input.onButtonPressed(Button.AB, function () {
+  exitLoop = 1
+})
+function exitFunc() {
+  led.enable(false)
+  neoRange = neo.range(0, 4)
+  neoRange.showColor(neopixel.colors(NeoPixelColors.Black))
+}
+function main() {
+  while (exitLoop == 0) {
+    readPad()
+    countPad()
+    basic.showNumber(cntPadA + cntPadB + cntPadC + cntPadD)
+  }
+}
+
+
 function showA() {
   clearLed()
   imageA.scrollImage(1, scrollMSec)
 }
 function showB() {
   clearLed()
-    imageB.scrollImage(1, scrollMSec)
+  imageB.scrollImage(1, scrollMSec)
 }
 function showC() {
   clearLed()
@@ -97,10 +138,17 @@ function countPad() {
   if (padC == 0) ++cntPadC
   if (padD == 0) ++cntPadD
 }
-pins.setEvents(DigitalPin.P16, PinEventType.Touch)
-pins.setEvents(DigitalPin.P1, PinEventType.Edge)  // 変化
-pins.setEvents(DigitalPin.P12, PinEventType.Pulse)
-pins.setEvents(DigitalPin.P2, PinEventType.Touch)
+
+initImages()
+initLed()
+initNeoPixel()
+
+// 意味なし
+// pins.setEvents(DigitalPin.P16, PinEventType.Touch)
+// pins.setEvents(DigitalPin.P1, PinEventType.Edge)  // 変化
+// pins.setEvents(DigitalPin.P12, PinEventType.Pulse)
+// pins.setEvents(DigitalPin.P2, PinEventType.Touch)
+
 led.setDisplayMode(DisplayMode.Greyscale)
 led.setBrightness(brightnessLed)
 // basic.showNumber(brightnessLed)
@@ -124,8 +172,15 @@ led.setBrightness(brightnessLed)
 // control.inBackground(function () {
 // })
 
-basic.forever(function () {
-  readPad()
-  countPad()
-  basic.showNumber(cntPadA + cntPadB + cntPadC + cntPadD)
-})
+main()
+exitFunc()
+
+// basic.forever(function () {
+//   if (exitLoop == 0) {
+//     readPad()
+//     countPad()
+//     basic.showNumber(cntPadA + cntPadB + cntPadC + cntPadD)
+//   } else {
+//     exitFunc()
+//   }
+// })
