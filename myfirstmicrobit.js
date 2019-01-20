@@ -1,77 +1,64 @@
-let imageC: Image = null
-let imageA: Image = null
-function showA2() {
-    imageA.scrollImage(1, 200)
-}
-function dispB2() {
-    led.plot(0, 0)
-    led.plot(1, 0)
-    led.plot(2, 0)
-    led.plot(3, 0)
-    led.plot(0, 1)
-    led.plot(4, 1)
-    led.plot(0, 2)
-    led.plot(1, 2)
-    led.plot(2, 2)
-    led.plot(3, 2)
-    led.plot(0, 3)
-    led.plot(4, 3)
-    led.plot(0, 4)
-    led.plot(1, 4)
-    led.plot(2, 4)
-    led.plot(3, 4)
-}
-function dispA2() {
-    led.plot(2, 0)
-    led.plot(1, 1)
-    led.plot(3, 1)
-    led.plot(0, 2)
-    led.plot(4, 2)
-    led.plot(0, 3)
-    led.plot(4, 3)
-    led.plot(0, 4)
-    led.plot(4, 4)
-    led.plot(1, 3)
-    led.plot(2, 3)
-    led.plot(3, 3)
-}
-function dispC2() {
-    led.plot(1, 0)
-    led.plot(2, 0)
-    led.plot(3, 0)
-    led.plot(0, 1)
-    led.plot(0, 2)
-    led.plot(0, 3)
-    led.plot(1, 4)
-    led.plot(2, 4)
-    led.plot(3, 4)
-}
-function dispD2() {
-    led.plot(0, 0)
-    led.plot(1, 0)
-    led.plot(2, 0)
-    led.plot(3, 0)
-    led.plot(0, 1)
-    led.plot(4, 1)
-    led.plot(0, 2)
-    led.plot(4, 2)
-    led.plot(0, 3)
-    led.plot(4, 3)
-    led.plot(0, 4)
-    led.plot(1, 4)
-    led.plot(2, 4)
-    led.plot(3, 4)
-}
+let imageA: Image = images.createImage(`
+. # # . .
+# . . # .
+# . . # .
+# # # # .
+# . . # .
+`)
+let imageB: Image = images.createImage(`
+# # # . .
+# . . # .
+# # # . .
+# . . # .
+# # # . .
+`)
+let imageC: Image = images.createImage(`
+. # # # .
+# . . . .
+# . . . .
+# . . . .
+. # # # .
+`)
+let imageD: Image = images.createImage(`
+# # # . .
+# . . # .
+# . . # .
+# . . # .
+# # # . .
+`)
+let brightnessLed = 16
+let scrollMSec = 300;
+let padA = 0
+let padB = 0
+let padC = 0
+let padD = 0
+let cntPadA = 0
+let cntPadB = 0
+let cntPadC = 0
+let cntPadD = 0
 input.onButtonPressed(Button.A, function () {
-    showC()
+  showA()
 })
 input.onButtonPressed(Button.B, function () {
-    showA2()
+  showB()
 })
-function showC() {
-    imageC.scrollImage(1, 200)
+function showA() {
+  clearLed()
+  imageA.scrollImage(1, scrollMSec)
 }
-function clearLed2() {
+function showB() {
+  clearLed()
+    imageB.scrollImage(1, scrollMSec)
+}
+function showC() {
+  clearLed()
+  imageC.scrollImage(1, scrollMSec)
+}
+function showD() {
+  clearLed()
+  imageD.scrollImage(1, scrollMSec)
+}
+function clearLed() {
     led.unplot(0, 0)
     led.unplot(1, 0)
     led.unplot(2, 0)
@@ -98,20 +85,47 @@ function clearLed2() {
     led.unplot(3, 4)
     led.unplot(4, 4)
 }
-imageA = images.createImage(`
-    . # # . .
-    # . . # .
-    # . . # .
-    # # # # .
-    # . . # .
-    `)
-imageC = images.createImage(`
-    . # # # .
-    # . . . .
-    # . . . .
-    # . . . .
-    . # # # .
-    `)
+function readPad() {
+  padA = pins.digitalReadPin(DigitalPin.P16)
+  padB = pins.digitalReadPin(DigitalPin.P1)
+  padC = pins.digitalReadPin(DigitalPin.P12)
+  padD = pins.digitalReadPin(DigitalPin.P2)
+}
+function countPad() {
+  if (padA == 0) ++cntPadA
+  if (padB == 0) ++cntPadB
+  if (padC == 0) ++cntPadC
+  if (padD == 0) ++cntPadD
+}
+pins.setEvents(DigitalPin.P16, PinEventType.Touch)
+pins.setEvents(DigitalPin.P1, PinEventType.Edge)  // 変化
+pins.setEvents(DigitalPin.P12, PinEventType.Pulse)
+pins.setEvents(DigitalPin.P2, PinEventType.Touch)
+led.setDisplayMode(DisplayMode.Greyscale)
+led.setBrightness(brightnessLed)
+// basic.showNumber(brightnessLed)
+// basic.pause(100)
+// brightnessLed *= 2
+// led.setBrightness(brightnessLed)
+// basic.showNumber(brightnessLed)
+// basic.pause(100)
+// brightnessLed *= 2
+// led.setBrightness(brightnessLed)
+// basic.showNumber(brightnessLed)
+// basic.pause(100)
+// brightnessLed *= 2
+// led.setBrightness(brightnessLed)
+// basic.showNumber(brightnessLed)
+// brightnessLed = 255
+// led.setBrightness(brightnessLed)
+// basic.showNumber(brightnessLed)
+
+// 
+// control.inBackground(function () {
+// })
+
 basic.forever(function () {
-	
+  readPad()
+  countPad()
+  basic.showNumber(cntPadA + cntPadB + cntPadC + cntPadD)
 })
