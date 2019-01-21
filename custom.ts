@@ -16,6 +16,10 @@ enum MyEnum {
  */
 //% weight=100 color=#0fbc11 icon=""
 namespace custom {
+  export const imageA = createImageA()
+  export const imageB = createImageB()
+  export const imageC = createImageC()
+  export const imageD = createImageD()
   export function createImageA(): Image{
     return images.createImage(`
         . # # . .
@@ -78,6 +82,23 @@ namespace custom {
     led.unplot(2, 4)
     led.unplot(3, 4)
     led.unplot(4, 4)
+  }
+  export function showA() {
+    custom.clearLed()
+    // imageA.scrollImage(1, scrollMSec)
+    custom.imageA.showImage(0)
+  }
+  export function showB() {
+    custom.clearLed()
+    custom.imageB.showImage(0)
+  }
+  export function showC() {
+    custom.clearLed()
+    custom.imageC.showImage(0)
+  }
+  export function showD() {
+    custom.clearLed()
+    custom.imageD.showImage(0)
   }
 
   export function readPadA() {
