@@ -153,15 +153,16 @@ led.setBrightness(brightnessLed)
 // })
 music.setTempo(180)
 
-main()
-exitFunc()
+// main()
+// exitFunc()
 
-// basic.forever(function () {
-//   if (exitLoop == 0) {
-//     readPad()
-//     countPad()
-//     basic.showNumber(cntPadA + cntPadB + cntPadC + cntPadD)
-//   } else {
-//     exitFunc()
-//   }
-// })
+basic.forever(function () {
+  if (exitLoop == 0) {
+    readPad()
+    countPad()
+    playSound()
+    displayScreen()
+  } else {
+    exitFunc()
+  }
+})
