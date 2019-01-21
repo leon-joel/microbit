@@ -3,34 +3,10 @@ let imageB: Image = null
 let imageC: Image = null
 let imageD: Image = null
 function initImages() {
-  imageA = images.createImage(`
-        . # # . .
-        # . . # .
-        # . . # .
-        # # # # .
-        # . . # .
-        `)
-  imageB = images.createImage(`
-        # # # . .
-        # . . # .
-        # # # . .
-        # . . # .
-        # # # . .
-        `)
-  imageC = images.createImage(`
-        . # # # .
-        # . . . .
-        # . . . .
-        # . . . .
-        . # # # .
-        `)
-  imageD = images.createImage(`
-        # # # . .
-        # . . # .
-        # . . # .
-        # . . # .
-        # # # . .
-        `)
+  imageA = custom.createImageA()
+  imageB = custom.createImageB()
+  imageC = custom.createImageC()
+  imageD = custom.createImageD()
 }
 
 let brightnessLed = 16
@@ -54,11 +30,69 @@ function initNeoPixel() {
   neo = neopixel.create(DigitalPin.P8, 4, NeoPixelMode.RGB)
   neo.setBrightness(16)
   neo.setPixelColor(0, neopixel.colors(NeoPixelColors.Red))
+  neo.setPixelColor(1, neopixel.colors(NeoPixelColors.Blue))
+  neo.setPixelColor(2, neopixel.colors(NeoPixelColors.Green))
+  neo.setPixelColor(3, neopixel.colors(NeoPixelColors.White))
   neo.show()
-  neoRange = neo.range(1, 3)
-  neoRange.showRainbow(1, 360)
+  // neoRange = neo.range(1, 3)
+  // neoRange.showRainbow(1, 360)
 }
-
+function showA() {
+  custom.clearLed()
+  // imageA.scrollImage(1, scrollMSec)
+  imageA.showImage(0)
+}
+function showB() {
+  custom.clearLed()
+  imageB.showImage(0)
+}
+function showC() {
+  custom.clearLed()
+  imageC.showImage(0)
+}
+function showD() {
+  custom.clearLed()
+  imageD.showImage(0)
+}
+function readPad() {
+  padA = custom.readPadA()
+  padB = custom.readPadB()
+  padC = custom.readPadC()
+  padD = custom.readPadD()
+}
+function countPad() {
+  // 0:押されていた 1:押されていなかった
+  if (padA == 0) ++cntPadA
+  if (padB == 0) ++cntPadB
+  if (padC == 0) ++cntPadC
+  if (padD == 0) ++cntPadD
+}
+function playSound() {
+  if (padA == 0){
+    // music.playTone(Note.C, music.beat(BeatFraction.Whole))
+    // music.playTone(Note.C, music.beat(BeatFraction.Eighth))
+    music.playTone(Note.C, music.beat(BeatFraction.Quarter))
+  } else if (padB == 0) {
+    music.playTone(Note.E, music.beat(BeatFraction.Quarter))
+    // music.beginMelody(music.builtInMelody(Melodies.Dadadadum), MelodyOptions.Once)
+    // music.beginMelody(music.builtInMelody(Melodies.Dadadadum), MelodyOptions.OnceInBackground)
+  } else if (padC == 0){
+    music.playTone(Note.G, music.beat(BeatFraction.Quarter))
+  } else if (padD == 0){
+    music.playTone(Note.C5, music.beat(BeatFraction.Quarter))
+  }
+}
+function displayScreen() {
+  if (padA == 0) {
+    showA()
+  } else if (padB == 0) {
+    showB()
+  } else if (padC == 0) {
+    showC()
+  } else if (padD == 0) {
+    showD()
+  }
+}
 input.onButtonPressed(Button.A, function () {
   showA()
 })
@@ -78,66 +112,12 @@ function main() {
   while (exitLoop == 0) {
     readPad()
     countPad()
-    basic.showNumber(cntPadA + cntPadB + cntPadC + cntPadD)
+    playSound()
+    displayScreen()
+    // basic.showNumber(cntPadA + cntPadB + cntPadC + cntPadD)
   }
 }
 
-
-function showA() {
-  clearLed()
-  imageA.scrollImage(1, scrollMSec)
-}
-function showB() {
-  clearLed()
-  imageB.scrollImage(1, scrollMSec)
-}
-function showC() {
-  clearLed()
-  imageC.scrollImage(1, scrollMSec)
-}
-function showD() {
-  clearLed()
-  imageD.scrollImage(1, scrollMSec)
-}
-function clearLed() {
-    led.unplot(0, 0)
-    led.unplot(1, 0)
-    led.unplot(2, 0)
-    led.unplot(3, 0)
-    led.unplot(4, 0)
-    led.unplot(0, 1)
-    led.unplot(1, 1)
-    led.unplot(2, 1)
-    led.unplot(3, 1)
-    led.unplot(4, 1)
-    led.unplot(0, 1)
-    led.unplot(1, 2)
-    led.unplot(2, 2)
-    led.unplot(3, 2)
-    led.unplot(4, 2)
-    led.unplot(0, 3)
-    led.unplot(1, 3)
-    led.unplot(2, 3)
-    led.unplot(3, 3)
-    led.unplot(4, 3)
-    led.unplot(0, 4)
-    led.unplot(1, 4)
-    led.unplot(2, 4)
-    led.unplot(3, 4)
-    led.unplot(4, 4)
-}
-function readPad() {
-  padA = pins.digitalReadPin(DigitalPin.P16)
-  padB = pins.digitalReadPin(DigitalPin.P1)
-  padC = pins.digitalReadPin(DigitalPin.P12)
-  padD = pins.digitalReadPin(DigitalPin.P2)
-}
-function countPad() {
-  if (padA == 0) ++cntPadA
-  if (padB == 0) ++cntPadB
-  if (padC == 0) ++cntPadC
-  if (padD == 0) ++cntPadD
-}
 
 initImages()
 initLed()
@@ -171,6 +151,7 @@ led.setBrightness(brightnessLed)
 // 
 // control.inBackground(function () {
 // })
+music.setTempo(180)
 
 main()
 exitFunc()
