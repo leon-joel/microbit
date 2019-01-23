@@ -56,59 +56,99 @@ function calcLedColors(id: number, patNum: number, detailNum: number) {
   return { r: r, g: g, b: b }
 }
 
-let currentColor = initNeoBrightness
-let d = 8
-let up = true
-let colorList: number[] = [0, 2, 4, 8, 16, 32, 64, 128, 255, 128, 64, 32, 16, 8, 4, 2, 1];
+enum LedMode {
+  Gradation,
+  Round,
+  Blink,
+  Off,
+}
+
+let ledMode = LedMode.Gradation
 function openingShow(){
+  let currentColor = initNeoBrightness
+  let up = true
+  const d = 8
   let cur = 0
   while (phase == 0) {
-    let patNum = Math.floor(cur / 256)
-    // if (100 == cur || 200 == cur || 250 < cur) {
-    //   basic.showNumber(cur)
-    //   basic.showNumber(patNum)
-    // }
-    let detail = cur % 256
-    for (let i = 0; i < 4; i++) {
-      let c = calcLedColors(i, patNum, detail)
-      neo.setPixelColor(i, neopixel.rgb(c.r, c.g, c.b))
+    if (ledMode == LedMode.Gradation){
+      // グラデーションカラーで回転
+      let patNum = Math.floor(cur / 256)
+      // if (100 == cur || 200 == cur || 250 < cur) {
+      //   basic.showNumber(cur)
+      //   basic.showNumber(patNum)
+      // }
+      let detail = cur % 256
+      for (let i = 0; i < 4; i++) {
+        let c = calcLedColors(i, patNum, detail)
+        neo.setPixelColor(i, neopixel.rgb(c.r, c.g, c.b))
+      }
+      neo.show()
+      ++cur
+      if (1024 <= cur) cur = 0
+    
+    } else if (ledMode == LedMode.Blink){
+      // 輝度をUp/Down
+      if (up) currentColor += d
+      else currentColor -= d
+      if (up && 255 < currentColor){
+        up = false
+        currentColor = 255
+      }else if (!up && currentColor < 8){
+        up = true
+        currentColor = 8
+      }
+      neo.setPixelColor(0, neopixel.rgb(currentColor, 0, 0))
+      neo.setPixelColor(1, neopixel.rgb(0, currentColor, 0))
+      neo.setPixelColor(2, neopixel.rgb(0, 0, currentColor))
+      neo.setPixelColor(3, neopixel.rgb(currentColor, currentColor, 0))
+      neo.show()
+
+    } else if (ledMode == LedMode.Round){
+      const cols = [{ r: 255, g: 255, b: 0 }, { r: 0, g: 255, b: 255 }, { r: 255, g: 0, b: 255 }, { r: 255, g: 255, b: 255 }]
+      let id = Math.floor(cur / 32) % 4
+      let c = cols[Math.floor(cur / 256)]
+      for (let i = 0; i < 4; i++) {
+        if (id == i) {
+          neo.setPixelColor(i, neopixel.rgb(c.r, c.g, c.b))
+        } else {
+          if (i == (id + 3) % 4)
+            neo.setPixelColor(i, neopixel.rgb(c.r * 2 / 4, c.g * 2 / 4, c.b * 2 / 4))
+          else if (i == (id + 2) % 4)
+            neo.setPixelColor(i, neopixel.rgb(c.r * 1 / 4, c.g * 1 / 4, c.b * 1 / 4))
+          else if (i == (id + 1) % 4)
+            neo.setPixelColor(i, neopixel.rgb(c.r * 1 / 8, c.g * 1 / 8, c.b * 1 / 8))
+        }
+      }
+      neo.show()
+      ++cur
+      if (1024 <= cur) cur = 0
+
+    } else if (ledMode == LedMode.Off){
+      neoRange = neo.range(0, 4)
+      neoRange.showColor(neopixel.colors(NeoPixelColors.Black))
     }
-    // let c1 = calcLedColors(1, patNum, detail)
-    // neo.setPixelColor(1, neopixel.rgb(c1.r, c1.g, c1.b))
-    // let c2 = calcLedColors(2, patNum, detail)
-    // neo.setPixelColor(2, neopixel.rgb(c2.r, c2.g, c2.b))
-    // let c3 = calcLedColors(3, patNum, detail)
-    // neo.setPixelColor(3, neopixel.rgb(c3.r, c3.g, c3.b))
-    neo.show()
     basic.pause(0)  // 時々pause(0)を入れてあげないとスイッチ入力を拾えなくなる
-    ++cur
-    if (1024 <= cur) cur = 0
+    
+    readPad()
+    playSound()
+    if (padA == Pad.On) {
+      ledMode = LedMode.Gradation
+      // basic.showString("Gradation")
+    }else if (padB == Pad.On) {
+      ledMode = LedMode.Blink
+      // basic.showString("Blink")
+    }else if (padC == Pad.On) {
+      ledMode = LedMode.Round
+      // basic.showString("Round")
+    }else if (padD == Pad.On) {
+      ledMode = LedMode.Off
+      // basic.showString("Off")
+    }
+    displayScreen()
   }
   
-  // 輝度をUp/Down
-  // while (phase == 0){
-  //   if (up){
-  //     currentColor += d
-  //   }else{
-  //     currentColor -= d
-  //   }
-  //   if (up && 255 < currentColor){
-  //     up = false
-  //     currentColor = 255
-  //   }else if (!up && currentColor < 8){
-  //     up = true
-  //     currentColor = 8
-  //   }
-    
-  //   neo.setPixelColor(0, neopixel.rgb(currentColor, 0, 0))
-  //   neo.setPixelColor(1, neopixel.rgb(0, currentColor, 0))
-  //   neo.setPixelColor(2, neopixel.rgb(0, 0, currentColor))
-  //   neo.setPixelColor(3, neopixel.rgb(currentColor, currentColor, 0))
-  //   neo.show()
-  //   basic.pause(100)
-  // }
-
   // 輝度リストを使用して輝度をUp/Down
+  // const colorList: number[] = [0, 2, 4, 8, 16, 32, 64, 128, 255, 128, 64, 32, 16, 8, 4, 2, 1];
   // for (let col of colorList) {
   //   neo.setPixelColor(0, neopixel.rgb(col, 0, 0))
   //   neo.setPixelColor(1, neopixel.rgb(0, col, 0))
@@ -159,6 +199,7 @@ function displayScreen() {
     custom.showD()
   }
 }
+let phase = 0
 input.onButtonPressed(Button.A, function () {
   custom.showA()
   phase = 1
@@ -167,7 +208,6 @@ input.onButtonPressed(Button.B, function () {
   custom.showB()
   phase = 1
 })
-let phase = 0
 input.onButtonPressed(Button.AB, function () {
   phase = 2
 })

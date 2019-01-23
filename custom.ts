@@ -4,11 +4,9 @@
  * 詳しくはこちらを参照してください：https://makecode.microbit.org/blocks/custom
  */
 
-enum MyEnum {
-  //% block="one"
-  One,
-  //% block="two"
-  Two
+enum Pad {
+  On = 0,
+  Off = 1,
 }
 
 /**
@@ -124,16 +122,16 @@ namespace custom {
    * @param e ここでパラメーターの説明をしてください。
    */
   //% block
-  export function foo(n: number, s: string, e: MyEnum): void {
-    // Add code here
-  }
+  // export function foo(n: number, s: string, e: MyEnum): void {
+  //   // Add code here
+  // }
 
   /**
    * TODO: ここに関数を記述してください
    * @param value ここで値の説明をしてください。, eg: 5
    */
   //% block
-  export function fib(value: number): number {
-    return value <= 1 ? value : fib(value - 1) + fib(value - 2);
-  }
+  // export function fib(value: number): number {
+  //   return value <= 1 ? value : fib(value - 1) + fib(value - 2);
+  // }
 }
