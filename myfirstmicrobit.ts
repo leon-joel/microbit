@@ -69,16 +69,18 @@ function openingShow(){
     //   basic.showNumber(patNum)
     // }
     let detail = cur % 256
-    let c0 = calcLedColors(0, patNum, detail)
-    neo.setPixelColor(0, neopixel.rgb(c0.r, c0.g, c0.b))
-    let c1 = calcLedColors(1, patNum, detail)
-    neo.setPixelColor(1, neopixel.rgb(c1.r, c1.g, c1.b))
-    let c2 = calcLedColors(2, patNum, detail)
-    neo.setPixelColor(2, neopixel.rgb(c2.r, c2.g, c2.b))
-    let c3 = calcLedColors(3, patNum, detail)
-    neo.setPixelColor(3, neopixel.rgb(c3.r, c3.g, c3.b))
+    for (let i = 0; i < 4; i++) {
+      let c = calcLedColors(i, patNum, detail)
+      neo.setPixelColor(i, neopixel.rgb(c.r, c.g, c.b))
+    }
+    // let c1 = calcLedColors(1, patNum, detail)
+    // neo.setPixelColor(1, neopixel.rgb(c1.r, c1.g, c1.b))
+    // let c2 = calcLedColors(2, patNum, detail)
+    // neo.setPixelColor(2, neopixel.rgb(c2.r, c2.g, c2.b))
+    // let c3 = calcLedColors(3, patNum, detail)
+    // neo.setPixelColor(3, neopixel.rgb(c3.r, c3.g, c3.b))
     neo.show()
-    //basic.pause(20)
+    basic.pause(0)  // 時々pause(0)を入れてあげないとスイッチ入力を拾えなくなる
     ++cur
     if (1024 <= cur) cur = 0
   }
