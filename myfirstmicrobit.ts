@@ -27,32 +27,86 @@ function initNeoPixel() {
   // neoRange.showRainbow(1, 360)
 }
 
+function calcLedColors(id: number, patNum: number, detailNum: number) {
+  let r = 0, g = 0, b = 0
+  let pat = (id + patNum) % 4
+  switch (pat) {
+    default:
+    case 0:
+      r = detailNum
+      g = detailNum
+      b = 255 - detailNum
+      break
+    case 1:
+      r = 255
+      g = 255 - detailNum
+      b = 0
+      break
+    case 2:
+      r = 255 - detailNum
+      g = detailNum
+      b = 0
+      break
+    case 3:
+      r = 0
+      g = 255 - detailNum
+      b = detailNum
+      break
+  }
+  return { r: r, g: g, b: b }
+}
+
 let currentColor = initNeoBrightness
 let d = 8
 let up = true
 let colorList: number[] = [0, 2, 4, 8, 16, 32, 64, 128, 255, 128, 64, 32, 16, 8, 4, 2, 1];
 function openingShow(){
-  while (phase == 0){
-    if (up){
-      currentColor += d
-    }else{
-      currentColor -= d
-    }
-    if (up && 255 < currentColor){
-      up = false
-      currentColor = 255
-    }else if (!up && currentColor < 8){
-      up = true
-      currentColor = 8
-    }
-    
-    neo.setPixelColor(0, neopixel.rgb(currentColor, 0, 0))
-    neo.setPixelColor(1, neopixel.rgb(0, currentColor, 0))
-    neo.setPixelColor(2, neopixel.rgb(0, 0, currentColor))
-    neo.setPixelColor(3, neopixel.rgb(currentColor, currentColor, 0))
+  let cur = 0
+  while (phase == 0) {
+    let patNum = Math.floor(cur / 256)
+    // if (100 == cur || 200 == cur || 250 < cur) {
+    //   basic.showNumber(cur)
+    //   basic.showNumber(patNum)
+    // }
+    let detail = cur % 256
+    let c0 = calcLedColors(0, patNum, detail)
+    neo.setPixelColor(0, neopixel.rgb(c0.r, c0.g, c0.b))
+    let c1 = calcLedColors(1, patNum, detail)
+    neo.setPixelColor(1, neopixel.rgb(c1.r, c1.g, c1.b))
+    let c2 = calcLedColors(2, patNum, detail)
+    neo.setPixelColor(2, neopixel.rgb(c2.r, c2.g, c2.b))
+    let c3 = calcLedColors(3, patNum, detail)
+    neo.setPixelColor(3, neopixel.rgb(c3.r, c3.g, c3.b))
     neo.show()
-    basic.pause(100)
+    //basic.pause(20)
+    ++cur
+    if (1024 <= cur) cur = 0
   }
+  
+  // 輝度をUp/Down
+  // while (phase == 0){
+  //   if (up){
+  //     currentColor += d
+  //   }else{
+  //     currentColor -= d
+  //   }
+  //   if (up && 255 < currentColor){
+  //     up = false
+  //     currentColor = 255
+  //   }else if (!up && currentColor < 8){
+  //     up = true
+  //     currentColor = 8
+  //   }
+    
+  //   neo.setPixelColor(0, neopixel.rgb(currentColor, 0, 0))
+  //   neo.setPixelColor(1, neopixel.rgb(0, currentColor, 0))
+  //   neo.setPixelColor(2, neopixel.rgb(0, 0, currentColor))
+  //   neo.setPixelColor(3, neopixel.rgb(currentColor, currentColor, 0))
+  //   neo.show()
+  //   basic.pause(100)
+  // }
+
+  // 輝度リストを使用して輝度をUp/Down
   // for (let col of colorList) {
   //   neo.setPixelColor(0, neopixel.rgb(col, 0, 0))
   //   neo.setPixelColor(1, neopixel.rgb(0, col, 0))
