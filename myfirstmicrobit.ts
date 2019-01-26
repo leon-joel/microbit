@@ -146,16 +146,16 @@ function openingShow(){
     
     readPad()
     playSound()
-    if (padA == Pad.On) {
+    if (padA == MyPad.Touched.On) {
       ledMode = LedMode.Gradation
       // basic.showString("Gradation")
-    }else if (padB == Pad.On) {
+    } else if (padB == MyPad.Touched.On) {
       ledMode = LedMode.Blink
       // basic.showString("Blink")
-    }else if (padC == Pad.On) {
+    } else if (padC == MyPad.Touched.On) {
       ledMode = LedMode.Round
       // basic.showString("Round")
-    }else if (padD == Pad.On) {
+    } else if (padD == MyPad.Touched.On) {
       ledMode = LedMode.Random
       // basic.showString("Random")
     }
@@ -175,10 +175,10 @@ function openingShow(){
   initNeoPixel()
 }
 function readPad() {
-  padA = custom.readPadA()
-  padB = custom.readPadB()
-  padC = custom.readPadC()
-  padD = custom.readPadD()
+  padA = MyPad.readPadA()
+  padB = MyPad.readPadB()
+  padC = MyPad.readPadC()
+  padD = MyPad.readPadD()
 }
 function countPad() {
   // 0:押されていた 1:押されていなかった
@@ -205,22 +205,22 @@ function playSound() {
 }
 function displayScreen() {
   if (padA == 0) {
-    custom.showA()
+    MyLed.showA()
   } else if (padB == 0) {
-    custom.showB()
+    MyLed.showB()
   } else if (padC == 0) {
-    custom.showC()
+    MyLed.showC()
   } else if (padD == 0) {
-    custom.showD()
+    MyLed.showD()
   }
 }
 let phase = 0
 input.onButtonPressed(Button.A, function () {
-  custom.showA()
+  MyLed.showA()
   phase = 1
 })
 input.onButtonPressed(Button.B, function () {
-  custom.showB()
+  MyLed.showB()
   phase = 1
 })
 input.onButtonPressed(Button.AB, function () {
