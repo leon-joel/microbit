@@ -60,7 +60,7 @@ enum LedMode {
   Gradation,
   Round,
   Blink,
-  Off,
+  Random,
 }
 
 let ledMode = LedMode.Gradation
@@ -83,8 +83,6 @@ function openingShow(){
         neo.setPixelColor(i, neopixel.rgb(c.r, c.g, c.b))
       }
       neo.show()
-      ++cur
-      if (1024 <= cur) cur = 0
     
     } else if (ledMode == LedMode.Blink){
       // 輝度をUp/Down
@@ -105,7 +103,7 @@ function openingShow(){
 
     } else if (ledMode == LedMode.Round){
       const cols = [{ r: 255, g: 255, b: 0 }, { r: 0, g: 255, b: 255 }, { r: 255, g: 0, b: 255 }, { r: 255, g: 255, b: 255 }]
-      let id = Math.floor(cur / 32) % 4
+      let id = Math.floor(cur / 16) % 4
       let c = cols[Math.floor(cur / 256)]
       for (let i = 0; i < 4; i++) {
         if (id == i) {
@@ -120,13 +118,30 @@ function openingShow(){
         }
       }
       neo.show()
-      ++cur
-      if (1024 <= cur) cur = 0
 
-    } else if (ledMode == LedMode.Off){
-      neoRange = neo.range(0, 4)
-      neoRange.showColor(neopixel.colors(NeoPixelColors.Black))
+    } else if (ledMode == LedMode.Random){
+      if (128 <= cur % 256){
+        neoRange = neo.range(0, 4)
+        neo.showColor(neopixel.colors(NeoPixelColors.White))
+      }else if (cur % 16 == 0){
+        for (let i = 0; i < 4; i++) {
+          let r = Math.randomRange(0, 255)
+          let g = Math.randomRange(0, 255)
+          let b = Math.randomRange(0, 255)
+          neo.setPixelColor(i, neopixel.rgb(r, g, b))
+        }
+        neo.show()
+      }
+      if (cur % 256 == 0){
+        music.playTone(Note.C3, music.beat(BeatFraction.Quarter))
+      }
+      // All OFF
+      // neoRange = neo.range(0, 4)
+      // neoRange.showColor(neopixel.colors(NeoPixelColors.Black))
     }
+    ++cur
+    if (1024 <= cur) cur = 0
+
     basic.pause(0)  // 時々pause(0)を入れてあげないとスイッチ入力を拾えなくなる
     
     readPad()
@@ -141,8 +156,8 @@ function openingShow(){
       ledMode = LedMode.Round
       // basic.showString("Round")
     }else if (padD == Pad.On) {
-      ledMode = LedMode.Off
-      // basic.showString("Off")
+      ledMode = LedMode.Random
+      // basic.showString("Random")
     }
     displayScreen()
   }
