@@ -65,7 +65,7 @@ namespace custom {
     led.unplot(2, 1)
     led.unplot(3, 1)
     led.unplot(4, 1)
-    led.unplot(0, 1)
+    led.unplot(0, 2)
     led.unplot(1, 2)
     led.unplot(2, 2)
     led.unplot(3, 2)
