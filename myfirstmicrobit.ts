@@ -94,6 +94,49 @@ function rotationIllumination(cycle : number) {
   MyLed.plotInnerLeds(ledsInner)
 }
 
+function blinkIllumination(cycle: number) {
+  switch (cycle % 8){
+    case 0:
+    case 7:
+      basic.clearScreen(); break;
+    case 1:
+    case 6:
+      for (let i = 0; i < 25; i++) {
+        let x = i % 5
+        let y = Math.floor(i / 5)
+        if ((x == 0 || x == 4) && (y == 0 || y == 4))
+          led.plot(x, y)
+        else
+          led.unplot(x, y)
+      }
+      break;
+    case 2:
+    case 5:
+      for (let i = 0; i < 25; i++) {
+        let x = i % 5
+        let y = Math.floor(i / 5)
+        if ((x == 0 || x == 4) && (y == 0 || y == 1 || y == 3 || y == 4))
+          led.plot(x, y)
+        else if ((x == 1 || x ==3) && (y == 0 || y == 4))
+          led.plot(x, y)
+        else
+          led.unplot(x, y)
+      }
+      break
+    case 3:
+    case 4:
+      for (let i = 0; i < 25; i++) {
+        let x = i % 5
+        let y = Math.floor(i / 5)
+        if (x == 2 || y == 2)
+          led.unplot(x, y)
+        else
+          led.plot(x, y)
+      }
+      break
+  }
+}
+
 function openingShow(){
   let currentColor = initNeoBrightness
   let up = true
@@ -134,6 +177,9 @@ function openingShow(){
       neo.setPixelColor(2, neopixel.rgb(0, 0, currentColor))
       neo.setPixelColor(3, neopixel.rgb(currentColor, currentColor, 0))
       neo.show()
+
+      // LED: チカチカ表示
+      blinkIllumination(cycle / 8)
 
     } else if (ledMode == LedMode.Round){
       const cols = [{ r: 255, g: 255, b: 0 }, { r: 0, g: 255, b: 255 }, { r: 255, g: 0, b: 255 }, { r: 255, g: 255, b: 255 }]
