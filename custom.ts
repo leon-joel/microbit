@@ -95,8 +95,6 @@ namespace MyLed {
     MyLed.imageD.showImage(0)
   }
 
-  // 外周ぐるぐるの同時点灯数
-  export const PlotOuterLen = 10
   // 外周ぐるぐるの全周LED数-1
   export const MaxOuterIdx = 15
   //   x -> 
@@ -149,8 +147,6 @@ namespace MyLed {
     led.unplot(4, 4)
   }
 
-  // 内側ぐるぐるの同時点灯数
-  export const PlotInnerLen = 6
   // 内側ぐるぐるの全周LED数-1
   export const MaxInnerIdx = 7
   //   x -> 

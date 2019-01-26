@@ -64,25 +64,59 @@ enum LedMode {
 }
 
 let ledMode = LedMode.Gradation
+// 内側ぐるぐるの同時点灯数
+const PlotInnerLen = 4
+// 内側ぐるぐるの点灯状況配列
+let ledsInner: MyLed.Stat[] = []
+// 外周ぐるぐるの同時点灯数
+const PlotOuterLen = 10
+// 同、外周
+let ledsOuter: MyLed.Stat[] = []
+
+function rotationIllumination(cycle : number) {
+  // LED: 点灯状況配列を初期化（全部OFFに）
+  for (let i = 0; i < MyLed.MaxOuterIdx + 1; i++) {
+    ledsOuter[i] = MyLed.Stat.Off
+  }
+  // 点灯する番号(idx)だけをOnにする
+  for (let i = 0; i < PlotOuterLen; i++) {
+    ledsOuter[(cycle / 10 + i) % (MyLed.MaxOuterIdx + 1)] = MyLed.Stat.On
+  }
+  MyLed.plotOuterLeds(ledsOuter)
+
+  // 同、内周
+  for (let i = 0; i < MyLed.MaxInnerIdx + 1; i++) {
+    ledsInner[i] = MyLed.Stat.Off
+  }
+  for (let i = 0; i < PlotInnerLen; i++) {
+    ledsInner[(cycle / 10 + i) % (MyLed.MaxInnerIdx + 1)] = MyLed.Stat.On
+  }
+  MyLed.plotInnerLeds(ledsInner)
+}
+
 function openingShow(){
   let currentColor = initNeoBrightness
   let up = true
   const d = 8
-  let cur = 0
+  let cycle = 0
+  const CycleMax = 65536
   while (phase == 0) {
     if (ledMode == LedMode.Gradation){
-      // グラデーションカラーで回転
-      let patNum = Math.floor(cur / 256)
-      // if (100 == cur || 200 == cur || 250 < cur) {
-      //   basic.showNumber(cur)
+      // NeoPixel: グラデーションカラーで回転
+      let patNum = Math.floor(cycle / 256)
+      // if (100 == cycle || 200 == cycle || 250 < cycle) {
+      //   basic.showNumber(cycle)
       //   basic.showNumber(patNum)
       // }
-      let detail = cur % 256
+      let detail = cycle % 256
       for (let i = 0; i < 4; i++) {
         let c = calcLedColors(i, patNum, detail)
         neo.setPixelColor(i, neopixel.rgb(c.r, c.g, c.b))
       }
       neo.show()
+
+      // LED: ぐるぐる表示
+      rotationIllumination(CycleMax - cycle)
     
     } else if (ledMode == LedMode.Blink){
       // 輝度をUp/Down
@@ -103,8 +137,8 @@ function openingShow(){
 
     } else if (ledMode == LedMode.Round){
       const cols = [{ r: 255, g: 255, b: 0 }, { r: 0, g: 255, b: 255 }, { r: 255, g: 0, b: 255 }, { r: 255, g: 255, b: 255 }]
-      let id = Math.floor(cur / 16) % 4
-      let c = cols[Math.floor(cur / 256)]
+      let id = Math.floor(cycle / 16) % 4
+      let c = cols[Math.floor(cycle / 256) % 4]
       for (let i = 0; i < 4; i++) {
         if (id == i) {
           neo.setPixelColor(i, neopixel.rgb(c.r, c.g, c.b))
@@ -120,10 +154,10 @@ function openingShow(){
       neo.show()
 
     } else if (ledMode == LedMode.Random){
-      if (128 <= cur % 256){
+      if (128 <= cycle % 256){
         neoRange = neo.range(0, 4)
         neo.showColor(neopixel.colors(NeoPixelColors.White))
-      }else if (cur % 16 == 0){
+      }else if (cycle % 16 == 0){
         for (let i = 0; i < 4; i++) {
           let r = Math.randomRange(0, 255)
           let g = Math.randomRange(0, 255)
@@ -132,15 +166,15 @@ function openingShow(){
         }
         neo.show()
       }
-      if (cur % 256 == 0){
+      if (cycle % 256 == 0){
         music.playTone(Note.C3, music.beat(BeatFraction.Quarter))
       }
       // All OFF
       // neoRange = neo.range(0, 4)
       // neoRange.showColor(neopixel.colors(NeoPixelColors.Black))
     }
-    ++cur
-    if (1024 <= cur) cur = 0
+    ++cycle
+    if (cycle == CycleMax) cycle = 0
 
     basic.pause(0)  // 時々pause(0)を入れてあげないとスイッチ入力を拾えなくなる
     
@@ -159,7 +193,7 @@ function openingShow(){
       ledMode = LedMode.Random
       // basic.showString("Random")
     }
-    displayScreen()
+    // displayScreen()
   }
   
   // 輝度リストを使用して輝度をUp/Down
