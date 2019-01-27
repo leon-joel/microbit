@@ -237,6 +237,8 @@ function openingShow(){
       if (128 <= cycle % 256){
         neoRange = neo.range(0, 4)
         neo.showColor(neopixel.colors(NeoPixelColors.White))
+        MyLed.plotAll(MyLed.Stat.On)
+
       }else if (cycle % 16 == 0){
         for (let i = 0; i < 4; i++) {
           let r = Math.randomRange(0, 255)
@@ -245,13 +247,12 @@ function openingShow(){
           neo.setPixelColor(i, neopixel.rgb(r, g, b))
         }
         neo.show()
+
+        MyLed.plotRandom()
       }
       if (cycle % 256 == 0){
         music.playTone(Note.C3, music.beat(BeatFraction.Quarter))
       }
-      // All OFF
-      // neoRange = neo.range(0, 4)
-      // neoRange.showColor(neopixel.colors(NeoPixelColors.Black))
     }
     ++cycle
     if (cycle == CycleMax) cycle = 0

@@ -51,32 +51,26 @@ namespace MyLed {
         `)
   }
   export function clearLed() {
-    led.unplot(0, 0)
-    led.unplot(1, 0)
-    led.unplot(2, 0)
-    led.unplot(3, 0)
-    led.unplot(4, 0)
-    led.unplot(0, 1)
-    led.unplot(1, 1)
-    led.unplot(2, 1)
-    led.unplot(3, 1)
-    led.unplot(4, 1)
-    led.unplot(0, 2)
-    led.unplot(1, 2)
-    led.unplot(2, 2)
-    led.unplot(3, 2)
-    led.unplot(4, 2)
-    led.unplot(0, 3)
-    led.unplot(1, 3)
-    led.unplot(2, 3)
-    led.unplot(3, 3)
-    led.unplot(4, 3)
-    led.unplot(0, 4)
-    led.unplot(1, 4)
-    led.unplot(2, 4)
-    led.unplot(3, 4)
-    led.unplot(4, 4)
+    plotAll(Stat.Off)
   }
+  export function plotAll(v:Stat) {
+    for (let x = 0; x < 5; x++) {
+      for (let y = 0; y < 5; y++) {
+        if (v == Stat.Off) led.unplot(x, y)
+        else led.plot(x, y)
+      }
+    }
+  }
+  export function plotRandom(){
+    for (let x = 0; x < 5; x++) {
+      for (let y = 0; y < 5; y++) {
+        const v = Math.randomRange(0, 1)
+        if (v == 0) led.unplot(x, y)
+        else led.plot(x, y)
+      }
+    }
+  }
+
   export function showA() {
     MyLed.clearLed()
     // imageA.scrollImage(1, scrollMSec)
