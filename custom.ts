@@ -191,6 +191,25 @@ namespace MyLed {
     led.unplot(3, 3)
   }
 
+  export const MaxLedIdx = 24
+  //   x -> 
+  // y  0  1  2  3  4
+  // ↓  5  6  7  8  9
+  //   10 11 12 13 14
+  //   15 16 17 18 19
+  //   20 21 22 23 24
+  export function plotLeds(aryIdx: Stat[]) {
+    for (let i = 0; i < aryIdx.length; i++) {
+      const x = i % 5
+      const y = Math.floor(i / 5)
+      const v = aryIdx[i];
+      if (v == Stat.On) led.plot(x, y)
+      else led.unplot(x, y)
+    }
+  }
+  export function xyToIndex(x:number, y:number) {
+    return y * 5 + x
+  }
   /**
    * TODO: ここに関数を記述してください
    * @param n ここでパラメーターの説明をしてください。, eg: 5

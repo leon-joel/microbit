@@ -137,6 +137,37 @@ function blinkIllumination(cycle: number) {
   }
 }
 
+let ledAry: MyLed.Stat[] = []
+function rectRoundIllumination(cycle:number) {
+  // LED: 点灯状況配列を初期化（全部OFFに）
+  for (let i = 0; i < MyLed.MaxLedIdx + 1; i++) {
+    ledAry[i] = MyLed.Stat.Off
+  }
+  // 点灯する番号(idx)だけをOnにする
+  let c = cycle % 12
+  let x : number
+  let y : number
+  if (c < 3){
+    x = c
+    y = 0
+  } else if (c < 6){
+    x = 3
+    y = c - 3
+  } else if (c < 9){
+    x = 9 - c
+    y = 3
+  } else if (c < 12){
+    x = 0
+    y = 12 - c
+  }
+  ledAry[MyLed.xyToIndex(x, y)] = MyLed.Stat.On
+  ledAry[MyLed.xyToIndex(x+1, y)] = MyLed.Stat.On
+  ledAry[MyLed.xyToIndex(x, y+1)] = MyLed.Stat.On
+  ledAry[MyLed.xyToIndex(x+1, y+1)] = MyLed.Stat.On
+
+  MyLed.plotLeds(ledAry)
+}
+
 function openingShow(){
   let currentColor = initNeoBrightness
   let up = true
@@ -198,6 +229,9 @@ function openingShow(){
         }
       }
       neo.show()
+
+      // LED: 四角ぐるぐる表示
+      rectRoundIllumination(Math.floor(cycle / 4))
 
     } else if (ledMode == LedMode.Random){
       if (128 <= cycle % 256){
